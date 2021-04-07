@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://xmlns.jcp.org/jsf/html">
+<head>
+    <meta charset="UTF-8">
+    <title>edit</title>
+</head>
+<body>
+<form action="#" th:action="@{/admin/edit}" th:object="${user}" method="POST">
+    <input type="hidden" th:field="*{id}"/>
+    <input type="text" th:field="*{login}"/><br/>
+    <input type="text" th:field="*{password}"/>
+    <p th:utext="*{roles[0].name}"></p>
+    <p align="center">
+    <td colspan="2"><input type="submit" value="Update"/></td>
+    </p>
+
+</form>
+</body>
+</html>

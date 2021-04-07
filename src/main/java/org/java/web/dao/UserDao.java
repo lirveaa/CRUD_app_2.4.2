@@ -1,5 +1,6 @@
 package org.java.web.dao;
 
+import org.java.web.model.Role;
 import org.java.web.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
@@ -12,5 +13,7 @@ public interface UserDao  {
     User readUser(long id);
     void updateUser(User user);
     void deleteUser(long id);
+    User getUser(String login);
     List<User> usersList();
+    List<Role> rolesList();
 }

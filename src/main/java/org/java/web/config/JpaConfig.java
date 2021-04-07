@@ -1,6 +1,5 @@
 package org.java.web.config;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -9,6 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -47,11 +47,12 @@ public class JpaConfig {
     }
 
     @Bean
-    public JpaTransactionManager platformTransactionManager(){
+    public PlatformTransactionManager platformTransactionManager(){
         JpaTransactionManager manager = new JpaTransactionManager();
         manager.setEntityManagerFactory(entityManagerFactory().getObject());
         return manager;
     }
+
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
@@ -60,12 +61,13 @@ public class JpaConfig {
 
     @Bean
     public DataSource dataSource(){
-        BasicDataSource db = new BasicDataSource();
+        DriverManagerDataSource db = new DriverManagerDataSource();
         db.setUrl(env.getRequiredProperty("db.url"));
         db.setDriverClassName(env.getRequiredProperty("db.driver"));
         db.setUsername(env.getRequiredProperty("db.username"));
         db.setPassword(env.getRequiredProperty("db.password"));
 
+        /*
         db.setInitialSize(Integer.parseInt((env.getRequiredProperty("db.initialSize"))));
         db.setMinIdle(Integer.parseInt(env.getRequiredProperty("db.minIdle")));
         db.setMaxIdle(Integer.parseInt(env.getRequiredProperty("db.maxIdle")));
@@ -73,14 +75,15 @@ public class JpaConfig {
         db.setMinEvictableIdleTimeMillis(Long.parseLong(env.getRequiredProperty("db.minEvictableIdleTimeMillis")));
         db.setTestOnBorrow(Boolean.parseBoolean(env.getRequiredProperty("db.testOnBorrow")));
         db.setValidationQuery(env.getRequiredProperty("db.validationQuery"));
-
+        */
         return db;
     }
 
     public Properties getHibernateProperties(){
         Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto","create");
+        properties.setProperty("hibernate.hbm2ddl.auto","validate");
         properties.setProperty("hibernate.dialect","org.hibernate.dialect.MySQL8Dialect");
+        properties.setProperty("hibernate.show_sql","true");
         return properties;
     }
 }

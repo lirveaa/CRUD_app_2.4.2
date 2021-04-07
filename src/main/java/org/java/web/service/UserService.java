@@ -1,5 +1,6 @@
 package org.java.web.service;
 
+import org.java.web.model.Role;
 import org.java.web.model.User;
 
 import java.util.List;
@@ -9,6 +10,8 @@ public interface UserService  {
     User readUser(long id);
     void updateUser(User user);
     void deleteUser(long id);
+    User getUser(String login);
     List<User> usersList();
-
+    List<Role> rolesList();
 }
+

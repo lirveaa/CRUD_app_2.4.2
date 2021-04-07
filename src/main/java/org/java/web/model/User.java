@@ -1,44 +1,46 @@
 package org.java.web.model;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Component("userBean")
 @Table(name ="users")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 50)
-    private String name;
+    @Column(name = "username", nullable = false, length = 50)
+    private String username;
 
-    @Column(name = "age",nullable = false )
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "age", nullable = false)
     private int age;
 
-   @Column(name = "last_name")
-   private String lastName;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     public User() {
 
     }
 
-    public User(String name, String lastName,  int age) {
-        this.name = name;
-        this.lastName = lastName;
+    public User(String username, String password, int age, Set<Role> roles) {
+        this.username = username;
+        this.password = password;
         this.age = age;
-
-    }
-
-    public String getLast_name() {
-        return lastName;
-    }
-
-    public void setLast_name(String last_name) {
-        this.lastName = last_name;
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -49,12 +51,13 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public int getAge() {
@@ -65,8 +68,59 @@ public class User {
         this.age = age;
     }
 
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public void printAllRoles() {
+        System.out.println(" === Set of roles: ");
+        for (Role role : roles) {
+            System.out.println(role);
+        }
+    }
+
     @Override
     public String toString() {
-        return "User " + name + " " + lastName + " age: " + age;
+        return "Username: " + username +
+                " password: " + password + " id: " + id;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 }
